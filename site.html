@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>MinhaTask</title>
   <style>
     /* Estilos CSS */
@@ -258,5 +262,18 @@
       }
     });
   </script>
+
+<script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(function(registration) {
+          console.log('Service Worker registrado com sucesso:', registration);
+        })
+        .catch(function(error) {
+          console.log('Falha ao registrar o Service Worker:', error);
+        });
+    }
+  </script>
+   
 </body>
 </html>

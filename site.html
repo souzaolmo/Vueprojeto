@@ -3,260 +3,257 @@
 <head>
   <title>MinhaTask</title>
   <style>
-    /* Estilo CSS aqui */
+    /* Estilos CSS */
     body {
-      background-color: #2c3e50;
+      background-color: #000;
       color: #fff;
-      font-family: Arial, sans-serif;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+  
+    .container {
       text-align: center;
     }
-
-    #app {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-
-    #clock {
-      font-size: 72px;
+  
+    .title {
+      font-size: 24px;
       margin-bottom: 20px;
     }
-
-    .task-container {
-      margin-top: 20px;
+  
+    .clock {
+      font-size: 48px;
+      margin-bottom: 20px;
     }
-
-    .task {
-      background-color: #3498db;
-      color: #fff;
-      padding: 10px;
-      margin-bottom: 10px;
-      cursor: pointer;
+  
+    .task-input {
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      width: auto;
-      max-width: 400px;
-      text-align: center;
-      border-radius: 5px;
+      justify-content: center;
     }
-
-    .task.accepted-task {
-      background-color: #f39c12;
+  
+    .task-input input[type="text"] {
+      width: 300px;
+      padding: 8px;
+      border: none;
+      background-color: #111;
+      color: #fff;
+      font-size: 14px;
+      margin-right: 10px;
     }
-
-    .task.completed-task {
-      background-color: #27ae60;
+  
+    .button {
+      background-color: #555;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
     }
-
-    .task.selected-task {
-      font-weight: bold;
+  
+    .button:hover {
+      background-color: #777;
     }
-
+  
+    .task-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+  
+    .task {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+  
     .task-name {
       flex: 1;
+      font-size: 16px;
     }
-
+  
     .task-buttons {
       display: flex;
       align-items: center;
+      justify-content: center;
     }
-
-    .button {
-      background-color: #e74c3c;
-      color: #fff;
-      border: none;
-      padding: 8px 15px;
+  
+    .finish-button {
+      background-color: #ff3333;
       margin-left: 10px;
-      cursor: pointer;
-      border-radius: 5px;
     }
-
-    .clear-button {
-      background-color: #e74c3c;
+  
+    .remove-button {
+      background-color: #777;
+      margin-left: 10px;
+    }
+  
+    .clear-all-button {
+      background-color: #555;
       color: #fff;
       border: none;
-      padding: 10px 20px;
-      margin-top: 20px;
+      padding: 8px 16px;
       cursor: pointer;
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      border-radius: 5px;
+      font-size: 14px;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      transition: background-color 0.3s ease;
     }
-
+  
+    .clear-all-button:hover {
+      background-color: #777;
+    }
+  
     .statistics {
-      margin-top: 50px;
+      margin-top: 20px;
     }
-
+  
     .stats-heading {
-      font-size: 24px;
+      font-size: 18px;
       margin-bottom: 10px;
     }
-
+  
     .stats-item {
-      margin-bottom: 20px;
-    }
-
-    .stats-item p {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
       margin-bottom: 5px;
     }
-
-    .stats-item ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    .stats-item li {
-      margin-bottom: 5px;
-    }
-
+  
     .total-time {
-      font-size: 18px;
+      font-size: 16px;
+      font-weight: bold;
       margin-top: 10px;
     }
+  
+    /* Estilos para dispositivos móveis */
+    @media screen and (max-width: 480px) {
+      .task-input input[type="text"] {
+        width: 80%;
+      }
+    }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  
 </head>
 <body>
   <div id="app">
-    <div id="clock">{{ currentTime }}</div>
-    <div>
-      <input v-model="taskName" type="text" placeholder="Digite a tarefa" maxlength="50">
-      <button class="button" v-on:click="addTask">Adicionar Tarefa</button>
+    <h1 class="title">MinhaTask</h1>
+
+    <div class="clock">{{ currentTime }}</div>
+
+    <div class="task-input">
+      <input type="text" v-model="taskInput" placeholder="Digite a tarefa" maxlength="50">
+      <button class="button" @click="addTask">Adicionar Tarefa</button>
     </div>
-    <div class="task-container" v-for="task in tasks" :key="task.id">
-      <div class="task"
-           :class="{
-             'accepted-task': task.accepted,
-             'completed-task': task.completed,
-             'selected-task': task === currentTask
-           }"
-           v-on:click="selectTask(task)">
-        <span class="task-name">{{ task.name }}</span>
+
+    <ul class="task-list">
+      <li v-for="task in tasks" :key="task.id" class="task">
+        <div class="task-name">{{ task.name }}</div>
         <div class="task-buttons">
-          <button class="button" v-show="!task.completed" v-on:click="completeTask(task)">Finalizar Tarefa</button>
-          <button class="button" v-on:click="removeTask(task)">Remover Tarefa</button>
+          <button v-if="!task.accepted" class="button" @click="acceptTask(task)">Aceitar</button>
+          <button v-else class="button finish-button" @click="finishTask(task)">Finalizar</button>
+          <button class="button remove-button" @click="removeTask(task)">Remover</button>
         </div>
+      </li>
+    </ul>
+
+    <button class="clear-all-button" @click="clearAllTasks">Limpar Tarefas Concluídas</button>
+
+    <div class="statistics">
+      <div class="stats-heading">Estatísticas do Dia:</div>
+      <div class="stats-item" v-for="stats in dailyStats">
+        <div>{{ stats.task }}</div>
+        <div>{{ formatTime(stats.time) }}</div>
       </div>
-    </div>
-    <button class="clear-button" v-on:click="clearCompletedTasks">Limpar Tarefas Concluídas</button>
-    <div class="statistics" v-show="dailyStats.length > 0">
-      <h2 class="stats-heading">Estatísticas do Dia</h2>
-      <div v-for="stats in dailyStats" :key="stats.date" class="stats-item">
-        <p>Data: {{ stats.date }}</p>
-        <p>Tarefas Concluídas: {{ stats.completedTasks }}</p>
-        <ul>
-          <li v-for="taskTime in stats.taskTimes">{{ taskTime.task }} - Tempo: {{ formatTime(taskTime.time) }}</li>
-        </ul>
-        <div class="total-time" v-show="completedTasks.length > 0">
-          Tempo Total de Tarefas Concluídas: {{ formatTime(totalTime) }}
-        </div>
-      </div>
+      <div class="total-time">Tempo Total: {{ formatTime(totalTime) }}</div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
   <script>
     new Vue({
       el: '#app',
       data: {
-        taskName: '',
+        taskInput: '',
         tasks: [],
         currentTask: null,
-        elapsedTime: 0,
         startTime: null,
-        completedTasks: [],
-        dailyStats: []
+        elapsedTime: 0,
+        totalTime: 0,
+        dailyStats: [],
+        currentTime: ''
       },
-      computed: {
-        currentTime: function() {
+      methods: {
+        addTask: function() {
+          if (this.taskInput.trim() !== '') {
+            this.tasks.push({
+              id: Date.now(),
+              name: this.taskInput,
+              accepted: false,
+              completed: false,
+              elapsedTime: 0
+            });
+            this.taskInput = '';
+          }
+        },
+        clearTaskInput: function() {
+          this.taskInput = '';
+        },
+        acceptTask: function(task) {
+          this.currentTask = task;
+          this.startTime = Date.now();
+          task.accepted = true;
+        },
+        finishTask: function(task) {
+          task.completed = true;
+          task.elapsedTime += this.elapsedTime;
+          this.totalTime += this.elapsedTime;
+          this.currentTask = null;
+          this.startTime = null;
+          this.elapsedTime = 0;
+        },
+        removeTask: function(task) {
+          this.tasks = this.tasks.filter(t => t.id !== task.id);
+        },
+        clearAllTasks: function() {
+          this.tasks = this.tasks.filter(task => !task.completed);
+          this.currentTask = null;
+          this.startTime = null;
+          this.elapsedTime = 0;
+          this.totalTime = 0;
+          this.dailyStats = [];
+        },
+        formatTime: function(time) {
+          var hours = Math.floor(time / 3600000);
+          var minutes = Math.floor((time % 3600000) / 60000);
+          var seconds = Math.floor((time % 60000) / 1000);
+          var milliseconds = time % 1000;
+          return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+        }
+      },
+      created: function() {
+        setInterval(() => {
           var now = new Date();
           var hours = now.getHours().toString().padStart(2, '0');
           var minutes = now.getMinutes().toString().padStart(2, '0');
           var seconds = now.getSeconds().toString().padStart(2, '0');
-          return `${hours}:${minutes}:${seconds}`;
-        },
-        totalTime: function() {
-          return this.completedTasks.reduce((total, task) => total + task.elapsedTime, 0);
-        }
+          this.currentTime = `${hours}:${minutes}:${seconds}`;
+          if (this.currentTask && this.startTime) {
+            this.elapsedTime = Date.now() - this.startTime;
+          }
+        }, 100);
       },
-      methods: {
-        addTask: function() {
-          if (this.taskName && !this.tasks.some(task => task.name === this.taskName)) {
-            var newTask = {
-              id: Date.now(),
-              name: this.taskName,
-              accepted: false,
-              completed: false,
-              elapsedTime: 0
-            };
-            this.tasks.push(newTask);
-            this.taskName = '';
-          }
-        },
-        selectTask: function(task) {
-          if (!task.accepted) {
-            this.tasks.forEach(t => {
-              if (t.accepted) {
-                t.accepted = false;
-              }
-            });
-            task.accepted = true;
-            this.currentTask = task;
-            this.startTime = Date.now();
-          } else {
-            this.currentTask = task;
-            this.startTime = Date.now() - task.elapsedTime;
-          }
-        },
-        completeTask: function(task) {
-          if (task) {
-            task.completed = true;
-            task.elapsedTime = Date.now() - this.startTime;
-            this.completedTasks.push(task);
-            this.updateDailyStats();
-            if (task === this.currentTask) {
-              this.currentTask = null;
-              this.startTime = null;
-              this.elapsedTime = 0;
-            }
-          }
-        },
-        removeTask: function(task) {
-          this.tasks = this.tasks.filter(t => t !== task);
-        },
-        clearCompletedTasks: function() {
-          this.completedTasks = [];
-        },
-        updateDailyStats: function() {
-          var today = new Date().toLocaleDateString();
-          var existingStats = this.dailyStats.find(stats => stats.date === today);
-          if (existingStats) {
-            existingStats.completedTasks = this.completedTasks.length;
-            existingStats.taskTimes = this.completedTasks.map(task => ({
-              task: task.name,
-              time: task.elapsedTime
-            }));
-          } else {
-            var newStats = {
-              date: today,
-              completedTasks: this.completedTasks.length,
-              taskTimes: this.completedTasks.map(task => ({
-                task: task.name,
-                time: task.elapsedTime
-              }))
-            };
-            this.dailyStats.push(newStats);
-          }
-        },
-        formatTime: function(time) {
-          var milliseconds = Math.floor(time % 1000);
-          var seconds = Math.floor((time / 1000) % 60);
-          var minutes = Math.floor((time / (1000 * 60)) % 60);
-          var hours = Math.floor((time / (1000 * 60 * 60)) % 24);
-          return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+      computed: {
+        filteredTasks: function() {
+          return this.tasks.filter(task => !task.completed);
         }
       }
     });

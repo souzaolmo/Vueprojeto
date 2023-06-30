@@ -34,9 +34,11 @@
       padding: 10px;
       margin-bottom: 10px;
       cursor: pointer;
-      display: inline-block;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       width: auto;
-      max-width: 200px;
+      max-width: 400px;
       text-align: center;
       border-radius: 5px;
     }
@@ -53,18 +55,21 @@
       font-weight: bold;
     }
 
+    .task-name {
+      flex: 1;
+    }
+
     .task-buttons {
-      margin-top: 10px;
       display: flex;
-      justify-content: center;
+      align-items: center;
     }
 
     .button {
-      background-color: #3498db;
+      background-color: #e74c3c;
       color: #fff;
       border: none;
-      padding: 10px 20px;
-      margin-right: 10px;
+      padding: 8px 15px;
+      margin-left: 10px;
       cursor: pointer;
       border-radius: 5px;
     }
@@ -130,10 +135,11 @@
              'selected-task': task === currentTask
            }"
            v-on:click="selectTask(task)">
-        {{ task.name }}
-      </div>
-      <div class="task-buttons" v-if="task.accepted && !task.completed">
-        <button class="button" v-on:click="completeTask(task)">Finalizar Tarefa</button>
+        <span class="task-name">{{ task.name }}</span>
+        <div class="task-buttons">
+          <button class="button" v-show="!task.completed" v-on:click="completeTask(task)">Finalizar Tarefa</button>
+          <button class="button" v-on:click="removeTask(task)">Remover Tarefa</button>
+        </div>
       </div>
     </div>
     <button class="clear-button" v-on:click="clearCompletedTasks">Limpar Tarefas Concluídas</button>
@@ -218,17 +224,18 @@
             }
           }
         },
+        removeTask: function(task) {
+          this.tasks = this.tasks.filter(t => t !== task);
+        },
         clearCompletedTasks: function() {
-          this.tasks = this.tasks.filter(task => !task.completed);
           this.completedTasks = [];
-          this.updateDailyStats();
         },
         updateDailyStats: function() {
-          var today = new Date().toISOString().split('T')[0];
-          var stats = this.dailyStats.find(s => s.date === today);
-          if (stats) {
-            stats.completedTasks = this.completedTasks.length;
-            stats.taskTimes = this.completedTasks.map(task => ({
+          var today = new Date().toLocaleDateString();
+          var existingStats = this.dailyStats.find(stats => stats.date === today);
+          if (existingStats) {
+            existingStats.completedTasks = this.completedTasks.length;
+            existingStats.taskTimes = this.completedTasks.map(task => ({
               task: task.name,
               time: task.elapsedTime
             }));
